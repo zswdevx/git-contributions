@@ -1,6 +1,46 @@
 # 安装指南
 
-## 方式一：下载预编译二进制（推荐）
+## 方式一：一键安装（推荐）
+
+### Windows
+
+在 PowerShell 中运行：
+
+```powershell
+# 安装最新版本
+iwr -useb https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.ps1 | iex
+
+# 安装特定版本
+$env:VERSION="v1.0.0"; iwr -useb https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.ps1 | iex
+```
+
+安装完成后：
+- 自动添加到 PATH
+- 可在任意目录直接运行 `git-contrib`
+- 安装位置：`%LOCALAPPDATA%\git-contrib\bin\`
+
+### Linux / macOS
+
+在终端运行：
+
+```bash
+# 安装最新版本
+curl -fsSL https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.sh | bash
+
+# 安装特定版本
+VERSION=v1.0.0 curl -fsSL https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.sh | bash
+
+# 自定义安装目录
+INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.sh | bash
+```
+
+安装完成后：
+- 自动添加到 PATH（需重新加载 shell）
+- 安装位置：`~/.local/bin/git-contrib`
+
+---
+
+## 方式二：下载预编译二进制
 
 从 [Releases](https://github.com/zswdevx/git-contributions/releases) 页面下载适合你系统的版本：
 

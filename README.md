@@ -14,12 +14,51 @@
 
 ## 安装
 
+### 一键安装（推荐）
+
+**Windows** (PowerShell):
+```powershell
+iwr -useb https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.ps1 | iex
+```
+
+**Linux / macOS**:
 ```bash
-git clone <repository-url>
+curl -fsSL https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.sh | bash
+```
+
+安装后即可全局使用：
+```bash
+git-contrib version
+git-contrib heatmap
+```
+
+详细安装说明请查看 [INSTALL.md](INSTALL.md)。
+
+### 其他安装方式
+
+<details>
+<summary>点击展开</summary>
+
+#### 手动下载
+
+从 [Releases](https://github.com/zswdevx/git-contributions/releases) 页面下载对应平台的二进制文件。
+
+#### Go install
+
+```bash
+go install github.com/zswdevx/git-contributions@latest
+```
+
+#### 从源码编译
+
+```bash
+git clone https://github.com/zswdevx/git-contributions.git
 cd git-contributions
 go mod tidy
-go build -o git-contrib
+go build -o git-contrib .
 ```
+
+</details>
 
 ## 使用方法
 
@@ -28,7 +67,7 @@ go build -o git-contrib
 在 Git 仓库目录中运行:
 
 ```bash
-./git-contrib heatmap
+git-contrib heatmap
 ```
 
 工具会自动显示从今天往前推一年的提交历史。
@@ -36,29 +75,23 @@ go build -o git-contrib
 ### 指定仓库路径
 
 ```bash
-./git-contrib heatmap --path /path/to/your/repo
+git-contrib heatmap --path /path/to/your/repo
 ```
 
 ### 指定年份（查看特定年份）
 
 ```bash
-./git-contrib heatmap --year 2025
+git-contrib heatmap --year 2025
 ```
 
 ### 按作者过滤
 
 ```bash
 # 单个作者
-./git-contrib heatmap --author "Your Name"
+git-contrib heatmap --author "Your Name"
 
 # 多个作者（多次使用 -a 参数）
-./git-contrib heatmap -a "Author1" -a "Author2"
-```
-
-### 组合使用
-
-```bash
-./git-contrib heatmap -p /path/to/repo -y 2023 -a "Your Name"
+git-contrib heatmap -a "Author1" -a "Author2"
 ```
 
 ## 参数说明
@@ -66,7 +99,7 @@ go build -o git-contrib
 | 参数 | 短参数 | 说明 | 默认值 |
 |------|--------|------|--------|
 | `--path` | `-p` | Git 仓库路径 | 当前目录 |
-| `--author` | `-a` | 作者名称(可指定多个) | 所有作者 |
+| `--author` | `-a` | 作者名称(可多次指定) | 所有作者 |
 | `--year` | `-y` | 年份(可选) | 显示过去一年 |
 
 **注意**:
@@ -91,27 +124,19 @@ go build -o git-contrib
 - 平均每天提交次数
 - 最活跃的5天排名
 
-## 技术栈
-
-- **Go 1.21+** - 编程语言
-- **go-git** - Git 仓库解析
-- **cobra** - CLI 框架
-- **gookit/color** - 终端颜色输出
-- **tablewriter** - 表格输出
-
 ## 示例输出
 
 ```
  2025年3月 - 2026年3月27日 Git 贡献热力图
 
-      Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-日  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-一  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-二  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-三  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-四  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-五  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-六  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+      Mar Apr May Jun Jul Aug Sep Oct Nov Dec Jan Feb
+日  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+一  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+二  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+三  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+四  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+五  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+六  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 颜色说明:
 ■ 无提交  ■ 低频(1-25%)  ■ 中频(25-50%)  ■ 高频(50-75%)  ■ 超高频(75-100%)
@@ -125,13 +150,21 @@ go build -o git-contrib
 +------+------------+--------+
 | 排名 |    日期    | 提交数 |
 +------+------------+--------+
-|    1 | 2023-03-15 |     23 |
-|    2 | 2023-07-22 |     18 |
-|    3 | 2023-11-08 |     15 |
-|    4 | 2023-05-30 |     12 |
-|    5 | 2023-09-12 |     11 |
+|    1 | 2025-03-15 |     23 |
+|    2 | 2025-07-22 |     18 |
+|    3 | 2025-11-08 |     15 |
+|    4 | 2025-05-30 |     12 |
+|    5 | 2025-09-12 |     11 |
 +------+------------+--------+
 ```
+
+## 技术栈
+
+- **Go 1.21+** - 编程语言
+- **go-git** - Git 仓库解析
+- **cobra** - CLI 框架
+- **gookit/color** - 终端颜色输出
+- **tablewriter** - 表格输出
 
 ## 开发计划
 
