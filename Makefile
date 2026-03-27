@@ -15,8 +15,8 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 build:
 	$(GOBUILD) -o $(BINARY_NAME).exe .
 	@echo "Build complete: $(BINARY_NAME).exe"
-	@cp $(BINARY_NAME).exe D:\\tools\\bin\\
-	@echo "Copied to D:\\tools\\bin\\$(BINARY_NAME).exe"
+	@cp $(BINARY_NAME).exe /d/tools/bin/
+	@echo "Copied to D:/tools/bin/$(BINARY_NAME).exe"
 
 # Install dependencies
 deps:
@@ -36,8 +36,8 @@ test:
 # Install binary to GOPATH
 install:
 	$(GOBUILD) -o $(GOPATH)/bin/$(BINARY_NAME).exe .
-	@cp $(BINARY_NAME).exe D:\\tools\\bin\\
-	@echo "Installed to D:\\tools\\bin\\$(BINARY_NAME).exe"
+	@cp $(BINARY_NAME).exe /d/tools/bin/
+	@echo "Installed to D:/tools/bin/$(BINARY_NAME).exe"
 
 # Run the tool on current directory
 run:

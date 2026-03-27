@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	repoPath   string
-	authorName string
-	year       int
+	repoPath    string
+	authorNames []string
+	year        int
 )
 
 var heatmapCmd = &cobra.Command{
@@ -32,7 +32,7 @@ var heatmapCmd = &cobra.Command{
 			year = time.Now().Year()
 		}
 
-		err := generateHeatmap(repoPath, authorName, year)
+		err := generateHeatmap(repoPath, authorNames, year)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "错误: %v\n", err)
 			os.Exit(1)
@@ -42,11 +42,11 @@ var heatmapCmd = &cobra.Command{
 
 func init() {
 	heatmapCmd.Flags().StringVarP(&repoPath, "path", "p", ".", "Git仓库路径")
-	heatmapCmd.Flags().StringVarP(&authorName, "author", "a", "", "作者名称(可选)")
+	heatmapCmd.Flags().StringArrayVarP(&authorNames, "author", "a", []string{}, "作者名称(可多次指定)")
 	heatmapCmd.Flags().IntVarP(&year, "year", "y", time.Now().Year(), "年份")
 }
 
-func generateHeatmap(repoPath, authorName string, year int) error {
+func generateHeatmap(repoPath string, authorNames []string, year int) error {
 	// 打开Git仓库
 	repo, err := git.PlainOpen(repoPath)
 	if err != nil {
@@ -76,9 +76,18 @@ func generateHeatmap(repoPath, authorName string, year int) error {
 			return nil
 		}
 
-		// 如果指定了作者，则过滤作者
-		if authorName != "" && c.Author.Name != authorName {
-			return nil
+		// 如果指定了作者，则过滤作者（支持多个）
+		if len(authorNames) > 0 {
+			found := false
+			for _, author := range authorNames {
+				if c.Author.Name == author {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return nil
+			}
 		}
 
 		// 按日期统计
@@ -156,11 +165,10 @@ func renderHeatmap(commitCounts map[string]int, startDate, endDate time.Time) {
 	fmt.Printf("\n %d年%d月 - %d年%d月%d日 Git 贡献热力图\n\n",
 		startYear, startMonth, endYear, endMonth, endDay)
 
-	// 打印月份标签
-	fmt.Print("     ") // 星期标签的宽度（2个中文字符 + 1个空格 = 大约5个字符宽度）
-	lastMonth := 0
+	// 打印月份标签，对齐到正确的周位置
+	// 先收集每个月份在第几周出现
+	monthWeeks := make(map[int]int)
 	for week := 0; week < totalWeeks; week++ {
-		// 计算该周的日期
 		daysFromStart := week*7 - startWeekday
 		if daysFromStart < 0 {
 			daysFromStart = 0
@@ -168,13 +176,24 @@ func renderHeatmap(commitCounts map[string]int, startDate, endDate time.Time) {
 		date := startDate.AddDate(0, 0, daysFromStart)
 		month := int(date.Month())
 
-		// 如果是新的月份，在该周的第一天打印月份标签
-		if month != lastMonth {
-			// 月份名称占3个字符，我们需要在正确的位置打印
-			fmt.Printf("%-3s", months[month-1])
-			lastMonth = month
-		} else {
-			// 打印空格来填充（每个格子是2个字符）
+		if _, exists := monthWeeks[month]; !exists {
+			monthWeeks[month] = week
+		}
+	}
+
+	// 打印月份标签
+	fmt.Print("     ") // 星期标签的宽度
+	for week := 0; week < totalWeeks; week++ {
+		// 检查这一周是否需要显示月份标签
+		found := false
+		for monthNum, monthWeek := range monthWeeks {
+			if monthWeek == week {
+				fmt.Printf("%-3s", months[monthNum-1])
+				found = true
+				break
+			}
+		}
+		if !found {
 			fmt.Print("  ")
 		}
 	}
