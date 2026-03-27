@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
+          GIT_COMMIT: ${{ github.sha }}
+          BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        run: |
+          # Windows AMD64
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-windows-amd64.exe .
+
+          # Linux AMD64
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-linux-amd64 .
+
+          # Darwin (macOS) AMD64
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-darwin-amd64 .
+
+          # Darwin (macOS) ARM64 (Apple Silicon)
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-darwin-arm64 .
+
+      - name: Create archives
+        run: |
+          cd bin
+          for file in *; do
+            if [ -f "$file" ]; then
+              tar -czf "${file}.tar.gz" "$file"
+              sha256sum "${file}.tar.gz" > "${file}.tar.gz.sha256"
+            fi
+          done
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: bin/*.tar.gz
+          body: |
+            ## git-contrib ${{ steps.get_version.outputs.VERSION }}
+
+            ### 下载
+            选择适合你系统的版本：
+            - **Windows**: `git-contrib-windows-amd64.exe.tar.gz`
+            - **Linux**: `git-contrib-linux-amd64.tar.gz`
+            - **macOS Intel**: `git-contrib-darwin-amd64.tar.gz`
+            - **macOS Apple Silicon**: `git-contrib-darwin-arm64.tar.gz`
+
+            ### 安装
+            ```bash
+            # 下载后解压
+            tar -xzf git-contrib-*.tar.gz
+
+            # 赋予执行权限（Linux/macOS）
+            chmod +x git-contrib-*
+
+            # 移动到 PATH（可选）
+            mv git-contrib-* /usr/local/bin/git-contrib
+            ```
+
+            ### 使用
+            ```bash
+            git-contrib heatmap
+            ```
+
+            ### 变更日志
+            查看 [CHANGELOG.md](CHANGELOG.md) 了解详细变更。
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

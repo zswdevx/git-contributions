@@ -22,7 +22,8 @@
       "Bash(git init:*)",
       "Bash(git config:*)",
       "Bash(cp git-contrib.exe D:\\\\tools\\\\bin\\\\)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(make build:*)"
     ]
   }
 }
