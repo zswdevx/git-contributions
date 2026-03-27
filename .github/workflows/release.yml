@@ -28,22 +28,22 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build binaries
-        env:
-          VERSION: ${{ steps.get_version.outputs.VERSION }}
-          GIT_COMMIT: ${{ github.sha }}
-          BUILD_DATE: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
         run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          GIT_COMMIT=${{ github.sha }}
+          BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
           # Windows AMD64
-          GOOS=windows GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-windows-amd64.exe .
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-windows-amd64.exe .
 
           # Linux AMD64
-          GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-linux-amd64 .
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-linux-amd64 .
 
           # Darwin (macOS) AMD64
-          GOOS=darwin GOARCH=amd64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-darwin-amd64 .
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-darwin-amd64 .
 
           # Darwin (macOS) ARM64 (Apple Silicon)
-          GOOS=darwin GOARCH=arm64 go build -ldflags "-X github.com/zsw/git-contributions/version.Version=${VERSION} -X github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT} -X github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}" -o bin/git-contrib-darwin-arm64 .
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-darwin-arm64 .
 
       - name: Create archives
         run: |
