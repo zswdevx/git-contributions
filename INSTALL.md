@@ -6,16 +6,30 @@
 
 ### Windows
 
+**选择正确的版本**：
+- `git-contrib-windows-amd64.exe.tar.gz` - 64位系统（推荐，适用于大多数现代电脑）
+- `git-contrib-windows-arm64.exe.tar.gz` - ARM64 设备（如高通骁龙笔记本）
+- `git-contrib-windows-386.exe.tar.gz` - 32位系统（老旧电脑）
+
+**安装步骤**：
 ```powershell
-# 下载 git-contrib-windows-amd64.exe.tar.gz
+# 下载对应版本
 # 解压后重命名为 git-contrib.exe
 # 添加到 PATH 环境变量或放在任意目录直接运行
+
+# 验证
+.\git-contrib.exe version
 ```
 
-### Linux / macOS
+### Linux
 
+**选择正确的版本**：
+- `git-contrib-linux-amd64.tar.gz` - 64位系统（x86_64）
+- `git-contrib-linux-arm64.tar.gz` - ARM64 设备（树莓派、ARM 服务器）
+
+**安装步骤**：
 ```bash
-# 下载
+# 下载（以 amd64 为例）
 wget https://github.com/zswdevx/git-contributions/releases/latest/download/git-contrib-linux-amd64.tar.gz
 
 # 解压
@@ -28,6 +42,33 @@ chmod +x git-contrib-linux-amd64
 sudo mv git-contrib-linux-amd64 /usr/local/bin/git-contrib
 
 # 验证安装
+git-contrib version
+```
+
+### macOS
+
+**选择正确的版本**：
+- `git-contrib-darwin-arm64.tar.gz` - Apple Silicon (M1/M2/M3)，2020年后的 Mac
+- `git-contrib-darwin-amd64.tar.gz` - Intel Mac，2020年前的 Mac
+
+**安装步骤**：
+```bash
+# 查看 CPU 架构
+uname -m
+# arm64 -> 下载 arm64 版本
+# x86_64 -> 下载 amd64 版本
+
+# 下载并解压
+tar -xzf git-contrib-darwin-*.tar.gz
+
+# macOS 可能需要允许运行未签名应用
+# 系统偏好设置 -> 安全性与隐私 -> 允许从以下位置下载的 App
+
+# 赋予执行权限并移动到 PATH
+chmod +x git-contrib-darwin-*
+sudo mv git-contrib-darwin-* /usr/local/bin/git-contrib
+
+# 验证
 git-contrib version
 ```
 

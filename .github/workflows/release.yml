@@ -33,16 +33,25 @@ jobs:
           GIT_COMMIT=${{ github.sha }}
           BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          # Windows AMD64
+          # Windows AMD64 (64位)
           GOOS=windows GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-windows-amd64.exe .
 
-          # Linux AMD64
+          # Windows ARM64 (如高通骁龙笔记本、树莓派 Windows 版)
+          GOOS=windows GOARCH=arm64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-windows-arm64.exe .
+
+          # Windows 386 (32位系统)
+          GOOS=windows GOARCH=386 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-windows-386.exe .
+
+          # Linux AMD64 (64位)
           GOOS=linux GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-linux-amd64 .
 
-          # Darwin (macOS) AMD64
+          # Linux ARM64 (树莓派、服务器等)
+          GOOS=linux GOARCH=arm64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-linux-arm64 .
+
+          # Darwin (macOS) AMD64 (Intel Mac)
           GOOS=darwin GOARCH=amd64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-darwin-amd64 .
 
-          # Darwin (macOS) ARM64 (Apple Silicon)
+          # Darwin (macOS) ARM64 (Apple Silicon: M1/M2/M3)
           GOOS=darwin GOARCH=arm64 go build -ldflags "-X 'github.com/zsw/git-contributions/version.Version=${VERSION}' -X 'github.com/zsw/git-contributions/version.GitCommit=${GIT_COMMIT}' -X 'github.com/zsw/git-contributions/version.BuildDate=${BUILD_DATE}'" -o bin/git-contrib-darwin-arm64 .
 
       - name: Create archives
@@ -64,10 +73,19 @@ jobs:
 
             ### 下载
             选择适合你系统的版本：
-            - **Windows**: `git-contrib-windows-amd64.exe.tar.gz`
-            - **Linux**: `git-contrib-linux-amd64.tar.gz`
-            - **macOS Intel**: `git-contrib-darwin-amd64.tar.gz`
-            - **macOS Apple Silicon**: `git-contrib-darwin-arm64.tar.gz`
+
+            **Windows**:
+            - `git-contrib-windows-amd64.exe.tar.gz` - 64位系统（推荐）
+            - `git-contrib-windows-arm64.exe.tar.gz` - ARM64 设备（高通骁龙笔记本）
+            - `git-contrib-windows-386.exe.tar.gz` - 32位系统（老旧电脑）
+
+            **Linux**:
+            - `git-contrib-linux-amd64.tar.gz` - 64位系统（推荐）
+            - `git-contrib-linux-arm64.tar.gz` - ARM64 设备（树莓派、服务器）
+
+            **macOS**:
+            - `git-contrib-darwin-amd64.tar.gz` - Intel Mac
+            - `git-contrib-darwin-arm64.tar.gz` - Apple Silicon (M1/M2/M3)
 
             ### 安装
             ```bash

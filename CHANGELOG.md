@@ -58,11 +58,22 @@
 
 1. **源代码**: 完整的源代码压缩包
 2. **预编译二进制**:
-   - Windows (amd64): `git-contrib-windows-amd64.exe.tar.gz`
-   - Linux (amd64): `git-contrib-linux-amd64.tar.gz`
-   - macOS Intel (amd64): `git-contrib-darwin-amd64.tar.gz`
-   - macOS Apple Silicon (arm64): `git-contrib-darwin-arm64.tar.gz`
+   - **Windows**:
+     - `git-contrib-windows-amd64.exe.tar.gz` - 64位系统（主流）
+     - `git-contrib-windows-arm64.exe.tar.gz` - ARM64 设备（高通骁龙笔记本）
+     - `git-contrib-windows-386.exe.tar.gz` - 32位系统（老旧电脑）
+   - **Linux**:
+     - `git-contrib-linux-amd64.tar.gz` - 64位系统（主流）
+     - `git-contrib-linux-arm64.tar.gz` - ARM64 设备（树莓派、服务器）
+   - **macOS**:
+     - `git-contrib-darwin-amd64.tar.gz` - Intel Mac
+     - `git-contrib-darwin-arm64.tar.gz` - Apple Silicon (M1/M2/M3)
 3. **校验文件**: SHA256 校验和
+
+**架构选择建议**：
+- **Windows**: 大部分用户选择 `amd64`；ARM64 笔记本选 `arm64`；老电脑选 `386`
+- **Linux**: 服务器和个人电脑选 `amd64`；ARM 设备选 `arm64`
+- **macOS**: 2020 年后的 Mac 选 `arm64`；旧款 Intel Mac 选 `amd64`
 
 ## 安装方式
 
