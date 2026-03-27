@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go mod:*)",
+      "Bash(go get:*)",
+      "Bash(go build:*)",
+      "Bash(go run:*)",
+      "Bash(go test:*)",
+      "Bash(go clean:*)",
+      "Bash(go fmt:*)",
+      "Bash(go vet:*)",
+      "Bash(go list:*)",
+      "Bash(go env:*)",
+      "Bash(go version:*)",
+      "Bash(go tool:*)",
+      "Bash(go generate:*)",
+      "Bash(go cover:*)",
+      "Bash(./git-contrib.exe --help)",
+      "Bash(./git-contrib.exe heatmap:*)",
+      "Read(//tmp/**)",
+      "Bash(/d/Projects/Self/golang/git-contributions/git-contrib.exe heatmap:*)"
+    ]
+  }
+}
