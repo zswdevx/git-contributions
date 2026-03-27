@@ -76,7 +76,9 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: bin/*.tar.gz
+          files: |
+            bin/*.zip
+            bin/*.tar.gz
           body: |
             ## git-contrib ${{ steps.get_version.outputs.VERSION }}
 
@@ -84,9 +86,9 @@ jobs:
             选择适合你系统的版本：
 
             **Windows**:
-            - `git-contrib-windows-amd64.exe.tar.gz` - 64位系统（推荐）
-            - `git-contrib-windows-arm64.exe.tar.gz` - ARM64 设备（高通骁龙笔记本）
-            - `git-contrib-windows-386.exe.tar.gz` - 32位系统（老旧电脑）
+            - `git-contrib-windows-amd64.exe.zip` - 64位系统（推荐）
+            - `git-contrib-windows-arm64.exe.zip` - ARM64 设备（高通骁龙笔记本）
+            - `git-contrib-windows-386.exe.zip` - 32位系统（老旧电脑）
 
             **Linux**:
             - `git-contrib-linux-amd64.tar.gz` - 64位系统（推荐）
