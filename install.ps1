@@ -8,6 +8,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# 辅助函数：创建临时目录（必须在使用前定义）
+function New-TemporaryDirectory {
+    $tempPath = [System.IO.Path]::GetTempPath()
+    $tempDir = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
+    New-Item -ItemType Directory -Path $tempDir | Out-Null
+    return $tempDir
+}
+
 # 设置安装目录
 if ([string]::IsNullOrEmpty($InstallDir)) {
     $InstallDir = "$env:LOCALAPPDATA\git-contrib"
@@ -123,12 +131,4 @@ try {
     if (Test-Path $TempDir) {
         Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue
     }
-}
-
-# 辅助函数：创建临时目录
-function New-TemporaryDirectory {
-    $tempPath = [System.IO.Path]::GetTempPath()
-    $tempDir = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
-    New-Item -ItemType Directory -Path $tempDir | Out-Null
-    return $tempDir
 }
