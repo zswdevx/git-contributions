@@ -156,37 +156,26 @@ func renderHeatmap(commitCounts map[string]int, startDate, endDate time.Time) {
 	fmt.Printf("\n %d年%d月 - %d年%d月%d日 Git 贡献热力图\n\n",
 		startYear, startMonth, endYear, endMonth, endDay)
 
-	// 计算每个月份应该显示的位置
-	monthPositions := make(map[int]int)
-	currentMonth := -1
+	// 打印月份标签
+	fmt.Print("     ") // 星期标签的宽度（2个中文字符 + 1个空格 = 大约5个字符宽度）
+	lastMonth := 0
 	for week := 0; week < totalWeeks; week++ {
-		// 计算该周周一的日期
-		daysFromStart := week*7 - startWeekday + 1
+		// 计算该周的日期
+		daysFromStart := week*7 - startWeekday
 		if daysFromStart < 0 {
 			daysFromStart = 0
 		}
 		date := startDate.AddDate(0, 0, daysFromStart)
 		month := int(date.Month())
 
-		// 如果是新的月份，记录位置
-		if month != currentMonth {
-			monthPositions[month] = week
-			currentMonth = month
-		}
-	}
-
-	// 打印月份标签
-	fmt.Print("     ")
-	lastPos := 0
-	for monthNum := 1; monthNum <= 12; monthNum++ {
-		if pos, exists := monthPositions[monthNum]; exists {
-			// 计算需要填充的空格
-			spacesNeeded := pos - lastPos
-			for i := 0; i < spacesNeeded; i++ {
-				fmt.Print("  ")
-			}
-			fmt.Printf("%-3s", months[monthNum-1])
-			lastPos = pos + 2
+		// 如果是新的月份，在该周的第一天打印月份标签
+		if month != lastMonth {
+			// 月份名称占3个字符，我们需要在正确的位置打印
+			fmt.Printf("%-3s", months[month-1])
+			lastMonth = month
+		} else {
+			// 打印空格来填充（每个格子是2个字符）
+			fmt.Print("  ")
 		}
 	}
 	fmt.Println()
