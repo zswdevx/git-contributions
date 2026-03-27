@@ -1,5 +1,5 @@
-# git-contrib Windows 安装脚本
-# 使用方法: iwr -useb https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.ps1 | iex
+# git-contrib Windows Installation Script
+# Usage: iwr -useb https://raw.githubusercontent.com/zswdevx/git-contributions/main/install.ps1 | iex
 
 param(
     [string]$Version = "latest",
@@ -8,7 +8,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# 辅助函数：创建临时目录（必须在使用前定义）
+# Helper function to create temporary directory
 function New-TemporaryDirectory {
     $tempPath = [System.IO.Path]::GetTempPath()
     $tempDir = [System.IO.Path]::Combine($tempPath, [System.IO.Path]::GetRandomFileName())
@@ -16,7 +16,7 @@ function New-TemporaryDirectory {
     return $tempDir
 }
 
-# 设置安装目录
+# Set installation directory
 if ([string]::IsNullOrEmpty($InstallDir)) {
     $InstallDir = "$env:LOCALAPPDATA\git-contrib"
 }
@@ -24,110 +24,110 @@ if ([string]::IsNullOrEmpty($InstallDir)) {
 $BinDir = Join-Path $InstallDir "bin"
 
 Write-Host "==========================================" -ForegroundColor Cyan
-Write-Host "  git-contrib Windows 安装程序" -ForegroundColor Cyan
+Write-Host "  git-contrib Windows Installer" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 检测系统架构
+# Detect system architecture
 $Arch = "amd64"
 if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
     $Arch = "arm64"
 }
-Write-Host "[信息] 检测到系统架构: $Arch" -ForegroundColor Green
+Write-Host "[INFO] Detected architecture: $Arch" -ForegroundColor Green
 
-# 确定 GitHub 下载 URL
+# Determine GitHub download URL
 $RepoUrl = "https://github.com/zswdevx/git-contributions"
 if ($Version -eq "latest") {
-    $DownloadUrl = "$RepoUrl/releases/latest/download/git-contrib-windows-$Arch.exe.tar.gz"
+    $DownloadUrl = "$RepoUrl/releases/latest/download/git-contrib-windows-$Arch.exe.zip"
 } else {
-    $DownloadUrl = "$RepoUrl/releases/download/$Version/git-contrib-windows-$Arch.exe.tar.gz"
+    $DownloadUrl = "$RepoUrl/releases/download/$Version/git-contrib-windows-$Arch.exe.zip"
 }
 
-Write-Host "[信息] 下载地址: $DownloadUrl" -ForegroundColor Yellow
+Write-Host "[INFO] Download URL: $DownloadUrl" -ForegroundColor Yellow
 
-# 创建临时目录
+# Create temporary directory
 $TempDir = New-TemporaryDirectory
-$TempFile = Join-Path $TempDir "git-contrib.tar.gz"
+$TempFile = Join-Path $TempDir "git-contrib.zip"
 
 try {
-    # 下载文件
-    Write-Host "[1/5] 正在下载 git-contrib..." -ForegroundColor Yellow
+    # Download file
+    Write-Host "[1/5] Downloading git-contrib..." -ForegroundColor Yellow
     Invoke-WebRequest -Uri $DownloadUrl -OutFile $TempFile -UseBasicParsing
-    Write-Host "[完成] 下载完成" -ForegroundColor Green
+    Write-Host "[DONE] Download completed" -ForegroundColor Green
 
-    # 解压文件
-    Write-Host "[2/5] 正在解压..." -ForegroundColor Yellow
+    # Extract file using PowerShell
+    Write-Host "[2/5] Extracting..." -ForegroundColor Yellow
     $ExtractDir = Join-Path $TempDir "extracted"
-    New-Item -ItemType Directory -Path $ExtractDir -Force | Out-Null
+    Expand-Archive -Path $TempFile -DestinationPath $ExtractDir -Force
+    Write-Host "[DONE] Extraction completed" -ForegroundColor Green
 
-    # 使用 tar 解压（Windows 10 1803+ 内置）
-    tar -xzf $TempFile -C $ExtractDir
-    Write-Host "[完成] 解压完成" -ForegroundColor Green
-
-    # 创建安装目录
-    Write-Host "[3/5] 正在安装..." -ForegroundColor Yellow
+    # Create installation directory
+    Write-Host "[3/5] Installing..." -ForegroundColor Yellow
     if (-not (Test-Path $BinDir)) {
         New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
     }
 
-    # 移动文件
-    $ExeFile = Get-ChildItem -Path $ExtractDir -Filter "*.exe" | Select-Object -First 1
-    $DestFile = Join-Path $BinDir "git-contrib.exe"
-    Move-Item -Path $ExeFile.FullName -Destination $DestFile -Force
-    Write-Host "[完成] 已安装到: $DestFile" -ForegroundColor Green
+    # Move file
+    $ExeFiles = Get-ChildItem -Path $ExtractDir -Filter "*.exe" -Recurse
+    if ($ExeFiles.Count -eq 0) {
+        throw "No .exe file found after extraction"
+    }
 
-    # 添加到 PATH
-    Write-Host "[4/5] 正在配置环境变量..." -ForegroundColor Yellow
+    $ExeFile = $ExeFiles | Select-Object -First 1
+    $DestFile = Join-Path $BinDir "git-contrib.exe"
+    Copy-Item -Path $ExeFile.FullName -Destination $DestFile -Force
+    Write-Host "[DONE] Installed to: $DestFile" -ForegroundColor Green
+
+    # Add to PATH
+    Write-Host "[4/5] Configuring environment..." -ForegroundColor Yellow
     $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
     if ($UserPath -notlike "*$BinDir*") {
         [Environment]::SetEnvironmentVariable("Path", "$UserPath;$BinDir", "User")
-        $env:Path = "$env:Path;$BinDir"
-        Write-Host "[完成] 已添加到 PATH" -ForegroundColor Green
+        Write-Host "[DONE] Added to PATH" -ForegroundColor Green
     } else {
-        Write-Host "[跳过] PATH 中已存在" -ForegroundColor Yellow
+        Write-Host "[SKIP] Already in PATH" -ForegroundColor Yellow
     }
 
-    # 验证安装
-    Write-Host "[5/5] 正在验证安装..." -ForegroundColor Yellow
-    $GitContribCmd = Join-Path $BinDir "git-contrib.exe"
-    if (Test-Path $GitContribCmd) {
-        Write-Host "[完成] 安装成功！" -ForegroundColor Green
+    # Verify installation
+    Write-Host "[5/5] Verifying installation..." -ForegroundColor Yellow
+    if (Test-Path $DestFile) {
+        Write-Host "[DONE] Installation successful!" -ForegroundColor Green
         Write-Host ""
         Write-Host "==========================================" -ForegroundColor Cyan
-        Write-Host "  安装完成！" -ForegroundColor Cyan
+        Write-Host "  Installation Complete!" -ForegroundColor Cyan
         Write-Host "==========================================" -ForegroundColor Cyan
         Write-Host ""
-        Write-Host "安装位置: $DestFile" -ForegroundColor White
+        Write-Host "Location: $DestFile" -ForegroundColor White
         Write-Host ""
-        Write-Host "现在可以在任意目录运行：" -ForegroundColor Yellow
+        Write-Host "You can now run:" -ForegroundColor Yellow
         Write-Host "  git-contrib version" -ForegroundColor White
         Write-Host "  git-contrib heatmap" -ForegroundColor White
         Write-Host ""
-        Write-Host "提示: 请重新打开 PowerShell/CMD 窗口使 PATH 生效" -ForegroundColor Yellow
+        Write-Host "Note: Restart PowerShell/CMD to refresh PATH" -ForegroundColor Yellow
         Write-Host ""
 
-        # 显示版本信息
+        # Show version
         try {
-            & $GitContribCmd version
+            & $DestFile version
         } catch {
-            Write-Host "[警告] 无法显示版本信息" -ForegroundColor Yellow
+            Write-Host "[WARNING] Cannot display version" -ForegroundColor Yellow
         }
     } else {
-        throw "安装验证失败：找不到 git-contrib.exe"
+        throw "Installation failed: git-contrib.exe not found"
     }
 
 } catch {
     Write-Host ""
-    Write-Host "[错误] 安装失败: $_" -ForegroundColor Red
+    Write-Host "[ERROR] Installation failed: $_" -ForegroundColor Red
     Write-Host ""
-    Write-Host "请尝试手动安装：" -ForegroundColor Yellow
-    Write-Host "1. 访问 $RepoUrl/releases" -ForegroundColor White
-    Write-Host "2. 下载对应的 Windows 版本" -ForegroundColor White
-    Write-Host "3. 解压后将 git-contrib.exe 放到 PATH 目录中" -ForegroundColor White
+    Write-Host "Please try manual installation:" -ForegroundColor Yellow
+    Write-Host "1. Visit $RepoUrl/releases" -ForegroundColor White
+    Write-Host "2. Download the Windows version" -ForegroundColor White
+    Write-Host "3. Extract and place git-contrib.exe in a PATH directory" -ForegroundColor White
     Write-Host ""
     exit 1
 } finally {
-    # 清理临时文件
+    # Cleanup temporary files
     if (Test-Path $TempDir) {
         Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue
     }

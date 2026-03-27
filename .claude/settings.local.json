@@ -21,9 +21,10 @@
       "Bash(/d/Projects/Self/golang/git-contributions/git-contrib.exe heatmap:*)",
       "Bash(git init:*)",
       "Bash(git config:*)",
-      "Bash(cp git-contrib.exe D:\\\\tools\\\\bin\\\\)",
       "Bash(git rebase:*)",
-      "Bash(make build:*)"
+      "Bash(make build:*)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File install.ps1)",
+      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"& '.\\\\install.ps1'\")"
     ]
   }
 }
